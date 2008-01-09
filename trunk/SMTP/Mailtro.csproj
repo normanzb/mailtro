@@ -1,0 +1,120 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6D5EFD43-F52E-4FC7-9334-691F29A79733}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SMTP</RootNamespace>
+    <AssemblyName>Mailtro</AssemblyName>
+    <ApplicationIcon>Mail.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="GUIs\FormAuthenLogin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUIs\FormAuthenLogin.Designer.cs">
+      <DependentUpon>FormAuthenLogin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Commands\CmdClose.cs" />
+    <Compile Include="Commands\CmdHelp.cs" />
+    <Compile Include="Commands\CmdSay.cs" />
+    <Compile Include="Commands\CmdSMTPCommunicatable.cs" />
+    <Compile Include="Commands\CommandManager.cs" />
+    <Compile Include="Commands\CmdOpen.cs" />
+    <Compile Include="Commands\CmdStartTls.cs" />
+    <Compile Include="Commands\Command.cs" />
+    <Compile Include="Commands\Commandable.cs" />
+    <Compile Include="Commands\CommandMessage.cs" />
+    <Compile Include="Commands\PackageCommands.cs" />
+    <Compile Include="GUIs\FormMailtro.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUIs\FormMailtro.Designer.cs">
+      <DependentUpon>FormMailtro.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="GUIs\FormAuthenLogin.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormAuthenLogin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUIs\FormMailtro.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormMailtro.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="Utility\TextboxAcceptKeyHelper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Mail.ico" />
+    <None Include="Resources\Public.ico.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\itemCollection\ItemCollection.csproj">
+      <Project>{AE24F89F-94FC-4E77-B661-A2F2E488EDC8}</Project>
+      <Name>ItemCollection</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SMTPCommunicator\SMTPCommunicator.csproj">
+      <Project>{C415ECAA-BF43-4800-8446-EEDE826777C7}</Project>
+      <Name>SMTPCommunicator</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\My Document\Visual Studio 2005\Projects\Be.HexEditor.111\Be.HexEditor.111\source\Be.Windows.Forms.HexBox\Be.Windows.Forms.HexBox.csproj">
+      <Project>{26C5F25F-B450-4CAF-AD8B-B8D11AE73457}</Project>
+      <Name>Be.Windows.Forms.HexBox</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
