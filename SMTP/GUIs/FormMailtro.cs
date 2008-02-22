@@ -332,14 +332,14 @@ namespace SMTP
 
         private void aboutToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Mailtro for SMTP tester\r\n by Norman Xu \r\n http://eroman.org \r\n http://blog.eroman.org");
+            MessageBox.Show("Mailtro for SMTP tester\r\n by Norman Xu \r\n http://eroman.org \r\n http://mailtro.googlecode.com");
         }
 
         private void onlineSupportToolStripMenuItem_Click(object sender, EventArgs e)
         {
             System.Diagnostics.Process ieProcess = new System.Diagnostics.Process();
             ieProcess.StartInfo.FileName = "explorer.exe";                                           // the executable file to start
-            ieProcess.StartInfo.Arguments = " http://blog.eroman.org/";
+            ieProcess.StartInfo.Arguments = " http://mailtro.googlecode.com";
             ieProcess.Start();
         }
 
