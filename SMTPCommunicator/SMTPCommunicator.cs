@@ -97,6 +97,7 @@ namespace SMTP
         private bool m_tls;
         private MessageEncoding m_messageencoding;
         private bool m_enforcemultipart;
+        private string m_encodingName;
 
         //Tcp client support a easy way to communicate with TCP.
         private TcpClient smtpServer;
@@ -303,6 +304,21 @@ namespace SMTP
             }
         }
 
+        public string EncodingName
+        {
+            set
+            {
+                this.m_encodingName = value;
+            }
+            get
+            {
+                return this.m_encodingName;
+            }
+        }
+
+        /// <summary>
+        /// Enforce to send a multipart email
+        /// </summary>
         public bool EnforceMultiPart {
             set {
                 this.m_enforcemultipart = value;
@@ -322,6 +338,7 @@ namespace SMTP
         {
             Attachments = new Collection<Attachment>();
             this.MessageEncoding = MessageEncoding.Printable;
+            this.EncodingName = Encoding.Default.EncodingName;
         }
 
         /// //////////////////////////////////////////////////////////////////////////////////////////
@@ -766,6 +783,10 @@ namespace SMTP
         //Open/Close connection to SMTP server
         public void Close()
         {
+            if (tlsStream != null)
+            {
+                tlsStream.Close();
+            }
             if (writeStream != null)
             {
                 writeStream.Close();
@@ -793,8 +814,8 @@ namespace SMTP
             _idelwritedata(SMTPDefinition.ClientCTo + ": " + this.To);
 
             //If subject contained non-English character
-            if (SMTP.Utility.NonEnglishCharDetector.Detect(this.Subject))
-                _idelwritedata(SMTPDefinition.ClientCSubject + ": =?gb2312?B?" + SMTP.Utility.Base64Convertor.Convert(this.Subject) + "?=");
+            if (SMTP.Utility.StringDetectors.NonEnglishChar(this.Subject))
+                _idelwritedata(SMTPDefinition.ClientCSubject + ": =?" + this.EncodingName + "?B?" + SMTP.Utility.Base64Convertor.Convert(this.Subject, this.EncodingName) + "?=");
             else
                 _idelwritedata(SMTPDefinition.ClientCSubject + ": " + this.Subject);
 
@@ -833,14 +854,14 @@ namespace SMTP
                 // TODO: get content type from registry and add some logical for the multi part message generator.
                 //..............And the charset
                 //-------------
-                _idelwritedata(SMTPDefinition.ClientCContentType + ": " + SMTPDefinition.ClientCContentTypeOption.TextPlain + "; charset=\"gb2312\"");
+                _idelwritedata(SMTPDefinition.ClientCContentType + ": " + SMTPDefinition.ClientCContentTypeOption.TextPlain + "; charset=\"" + this.EncodingName + "\"");
 
                 //if require base64
-                if (this.MessageEncoding == MessageEncoding.Base64 || SMTP.Utility.NonEnglishCharDetector.Detect(this.Message))
+                if (this.MessageEncoding == MessageEncoding.Base64 || SMTP.Utility.StringDetectors.NonEnglishChar(this.Message))
                 {
                     _idelwritedata(SMTPDefinition.ClientCContentTransferEncoding + ": " + SMTPDefinition.ClientCContentTransferEncodingOption.Base64);
                     _idelwritedata("");
-                    _idelwritedata(SMTP.Utility.Base64Convertor.Convert(this.Message));
+                    _idelwritedata(SMTP.Utility.Base64Convertor.Convert(this.Message, this.EncodingName));
                     
                 }
                 else if (this.MessageEncoding == MessageEncoding.Printable)
@@ -858,20 +879,20 @@ namespace SMTP
                     _idelwritedata(currBoundary.NormalBoundary);
 
                     _idelwritedata(SMTPDefinition.ClientCContentType + ": " + SMTPDefinition.ClientCContentTypeOption.AplicationStream + ";\r\n\tname=\"" +
-                        (this.MessageEncoding == MessageEncoding.Base64 || SMTP.Utility.NonEnglishCharDetector.Detect(this.Attachments[i].FileName) ?
-                        "=?gb2312?b?" + SMTP.Utility.Base64Convertor.Convert(this.Attachments[i].FileName) + "?=" : 
+                        (this.MessageEncoding == MessageEncoding.Base64 || SMTP.Utility.StringDetectors.NonEnglishChar(this.Attachments[i].FileName) ?
+                        "=?" + this.EncodingName + "?b?" + SMTP.Utility.Base64Convertor.Convert(this.Attachments[i].FileName) + "?=" : 
                         this.Attachments[i].FileName + "\""));
 
                     _idelwritedata(SMTPDefinition.ClientCContentTransferEncoding + ": " + SMTPDefinition.ClientCContentTransferEncodingOption.Base64);
                     //If non-english characters are found
-                    if (this.MessageEncoding == MessageEncoding.Base64 || SMTP.Utility.NonEnglishCharDetector.Detect(this.Attachments[i].FileName))
-                        _idelwritedata(SMTPDefinition.ClientCContentDescription + ": " + "=?gb2312?b?" + SMTP.Utility.Base64Convertor.Convert(this.Attachments[i].FileName) + "?=");
+                    if (this.MessageEncoding == MessageEncoding.Base64 || SMTP.Utility.StringDetectors.NonEnglishChar(this.Attachments[i].FileName))
+                        _idelwritedata(SMTPDefinition.ClientCContentDescription + ": " + "=?" + this.EncodingName + "?b?" + SMTP.Utility.Base64Convertor.Convert(this.Attachments[i].FileName) + "?=");
                     else
                         _idelwritedata(SMTPDefinition.ClientCContentDescription + ": " + this.Attachments[i].FileName);
 
-                    _idelwritedata(SMTPDefinition.ClientCContentDisposition + ": " + SMTPDefinition.ClientCContentDispositionOption.Attachment + "; filename=\"" + 
-                        (this.MessageEncoding == MessageEncoding.Base64 || SMTP.Utility.NonEnglishCharDetector.Detect(this.Attachments[i].FileName) ?
-                        "=?gb2312?b?" + SMTP.Utility.Base64Convertor.Convert(this.Attachments[i].FileName) + "?=" : 
+                    _idelwritedata(SMTPDefinition.ClientCContentDisposition + ": " + SMTPDefinition.ClientCContentDispositionOption.Attachment + "; filename=\"" +
+                        (this.MessageEncoding == MessageEncoding.Base64 || SMTP.Utility.StringDetectors.NonEnglishChar(this.Attachments[i].FileName) ?
+                        "=?" + this.EncodingName + "?b?" + SMTP.Utility.Base64Convertor.Convert(this.Attachments[i].FileName) + "?=" : 
                         this.Attachments[i].FileName + "\""));
                     _idelwritedata("");
                     _idelwritedata(this.EncodeFile(this.Attachments[i].Path));
@@ -883,11 +904,12 @@ namespace SMTP
             else
             {
                 //if require base64
-                if (this.MessageEncoding == MessageEncoding.Base64 || SMTP.Utility.NonEnglishCharDetector.Detect(this.Message) ) {
-                    _idelwritedata(SMTPDefinition.ClientCContentType + ": " + SMTPDefinition.ClientCContentTypeOption.TextPlain + "; charset=\"gb2312\"");
+                if (this.MessageEncoding == MessageEncoding.Base64 || SMTP.Utility.StringDetectors.NonEnglishChar(this.Message))
+                {
+                    _idelwritedata(SMTPDefinition.ClientCContentType + ": " + SMTPDefinition.ClientCContentTypeOption.TextPlain + "; charset=\"" + this.EncodingName + "\"");
                     _idelwritedata(SMTPDefinition.ClientCContentTransferEncoding + ": " + SMTPDefinition.ClientCContentTransferEncodingOption.Base64);
                     _idelwritedata("");
-                    _idelwritedata(SMTP.Utility.Base64Convertor.Convert(this.Message));
+                    _idelwritedata(SMTP.Utility.Base64Convertor.Convert(this.Message, this.EncodingName));
                 }
                 else if (this.MessageEncoding== MessageEncoding.Printable)
                 {

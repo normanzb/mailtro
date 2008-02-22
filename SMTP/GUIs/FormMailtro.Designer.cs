@@ -76,8 +76,9 @@ namespace SMTP
             this.chkTls = new System.Windows.Forms.CheckBox();
             this.btnSetAuth = new System.Windows.Forms.Button();
             this.chkAuthentication = new System.Windows.Forms.CheckBox();
-            this.label10 = new System.Windows.Forms.Label();
-            this.txtCharset = new System.Windows.Forms.TextBox();
+            this.lblEncodingName = new System.Windows.Forms.Label();
+            this.txtAttachment = new ItemCollection.ItemCollection();
+            this.hexMessage = new Be.Windows.Forms.HexBox();
             this.gruSending = new System.Windows.Forms.GroupBox();
             this.txtInterval = new System.Windows.Forms.TextBox();
             this.txtCount = new System.Windows.Forms.TextBox();
@@ -87,8 +88,7 @@ namespace SMTP
             this.txtCommand = new System.Windows.Forms.TextBox();
             this.btnCommand = new System.Windows.Forms.Button();
             this.label13 = new System.Windows.Forms.Label();
-            this.txtAttachment = new ItemCollection.ItemCollection();
-            this.hexMessage = new Be.Windows.Forms.HexBox();
+            this.cmbEncodingName = new System.Windows.Forms.ComboBox();
             this.menMain.SuspendLayout();
             this.stuMain.SuspendLayout();
             this.panReceiver.SuspendLayout();
@@ -479,14 +479,14 @@ namespace SMTP
             // 
             this.panMessageBody.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)));
+            this.panMessageBody.Controls.Add(this.cmbEncodingName);
             this.panMessageBody.Controls.Add(this.txtMessage);
             this.panMessageBody.Controls.Add(this.chkMultiPart);
             this.panMessageBody.Controls.Add(this.chkBase64);
             this.panMessageBody.Controls.Add(this.chkTls);
             this.panMessageBody.Controls.Add(this.btnSetAuth);
             this.panMessageBody.Controls.Add(this.chkAuthentication);
-            this.panMessageBody.Controls.Add(this.label10);
-            this.panMessageBody.Controls.Add(this.txtCharset);
+            this.panMessageBody.Controls.Add(this.lblEncodingName);
             this.panMessageBody.Controls.Add(this.btnEditorView);
             this.panMessageBody.Controls.Add(this.label4);
             this.panMessageBody.Controls.Add(this.btnDatagramView);
@@ -561,24 +561,42 @@ namespace SMTP
             this.chkAuthentication.Text = "Require Authentication";
             this.chkAuthentication.UseVisualStyleBackColor = true;
             // 
-            // label10
+            // lblEncodingName
             // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(297, 71);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(48, 13);
-            this.label10.TabIndex = 107;
-            this.label10.Text = "CharSet:";
+            this.lblEncodingName.AutoSize = true;
+            this.lblEncodingName.Location = new System.Drawing.Point(290, 71);
+            this.lblEncodingName.Name = "lblEncodingName";
+            this.lblEncodingName.Size = new System.Drawing.Size(55, 13);
+            this.lblEncodingName.TabIndex = 107;
+            this.lblEncodingName.Text = "Encoding:";
             // 
-            // txtCharset
+            // txtAttachment
             // 
-            this.txtCharset.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtCharset.Enabled = false;
-            this.txtCharset.Location = new System.Drawing.Point(351, 69);
-            this.txtCharset.Name = "txtCharset";
-            this.txtCharset.Size = new System.Drawing.Size(51, 20);
-            this.txtCharset.TabIndex = 106;
-            this.txtCharset.Text = "Under implementation";
+            this.txtAttachment.Location = new System.Drawing.Point(96, 27);
+            this.txtAttachment.Name = "txtAttachment";
+            this.txtAttachment.Size = new System.Drawing.Size(225, 22);
+            this.txtAttachment.TabIndex = 105;
+            this.txtAttachment.TabStop = false;
+            this.txtAttachment.TextBoxBorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            // 
+            // hexMessage
+            // 
+            this.hexMessage.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)));
+            this.hexMessage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.hexMessage.BytesPerLine = 12;
+            this.hexMessage.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.hexMessage.Location = new System.Drawing.Point(16, 118);
+            this.hexMessage.Name = "hexMessage";
+            this.hexMessage.SelectionLength = ((long)(0));
+            this.hexMessage.SelectionStart = ((long)(-1));
+            this.hexMessage.ShadowSelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(60)))), ((int)(((byte)(188)))), ((int)(((byte)(255)))));
+            this.hexMessage.Size = new System.Drawing.Size(386, 156);
+            this.hexMessage.StringViewVisible = true;
+            this.hexMessage.TabIndex = 8;
+            this.hexMessage.UseFixedBytesPerLine = true;
+            this.hexMessage.Visible = false;
+            this.hexMessage.VScrollBarVisible = true;
             // 
             // gruSending
             // 
@@ -661,33 +679,19 @@ namespace SMTP
             this.label13.TabIndex = 112;
             this.label13.Text = "Command:";
             // 
-            // txtAttachment
+            // cmbEncodingName
             // 
-            this.txtAttachment.Location = new System.Drawing.Point(96, 27);
-            this.txtAttachment.Name = "txtAttachment";
-            this.txtAttachment.Size = new System.Drawing.Size(225, 22);
-            this.txtAttachment.TabIndex = 105;
-            this.txtAttachment.TabStop = false;
-            this.txtAttachment.TextBoxBorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            // 
-            // hexMessage
-            // 
-            this.hexMessage.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)));
-            this.hexMessage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.hexMessage.BytesPerLine = 12;
-            this.hexMessage.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.hexMessage.Location = new System.Drawing.Point(16, 118);
-            this.hexMessage.Name = "hexMessage";
-            this.hexMessage.SelectionLength = ((long)(0));
-            this.hexMessage.SelectionStart = ((long)(-1));
-            this.hexMessage.ShadowSelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(60)))), ((int)(((byte)(188)))), ((int)(((byte)(255)))));
-            this.hexMessage.Size = new System.Drawing.Size(386, 156);
-            this.hexMessage.StringViewVisible = true;
-            this.hexMessage.TabIndex = 8;
-            this.hexMessage.UseFixedBytesPerLine = true;
-            this.hexMessage.Visible = false;
-            this.hexMessage.VScrollBarVisible = true;
+            this.cmbEncodingName.FormattingEnabled = true;
+            this.cmbEncodingName.Items.AddRange(new object[] {
+            "Default",
+            "ASCII",
+            "Gb2312",
+            "Shift-JIS"});
+            this.cmbEncodingName.Location = new System.Drawing.Point(351, 68);
+            this.cmbEncodingName.Name = "cmbEncodingName";
+            this.cmbEncodingName.Size = new System.Drawing.Size(51, 21);
+            this.cmbEncodingName.TabIndex = 114;
+            this.cmbEncodingName.Text = "Default";
             // 
             // MainForm
             // 
@@ -787,8 +791,7 @@ namespace SMTP
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripProgressBar tspMain;
         private System.Windows.Forms.SaveFileDialog sfdExport;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.TextBox txtCharset;
+        private System.Windows.Forms.Label lblEncodingName;
         private System.Windows.Forms.CheckBox chkAuthentication;
         private System.Windows.Forms.Button btnSetAuth;
         private System.Windows.Forms.CheckBox chkTls;
@@ -800,6 +803,7 @@ namespace SMTP
         private System.Windows.Forms.Button btnCommand;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.TextBox txtMessage;
+        private System.Windows.Forms.ComboBox cmbEncodingName;
 
 
     }

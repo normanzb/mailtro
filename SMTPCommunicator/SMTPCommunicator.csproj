@@ -7,7 +7,7 @@
     <ProjectGuid>{C415ECAA-BF43-4800-8446-EEDE826777C7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SMTPCommunicator</RootNamespace>
+    <RootNamespace>SMTP</RootNamespace>
     <AssemblyName>SMTPCommunicator</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -40,7 +40,7 @@
     <Compile Include="SMTPDefinition.cs" />
     <Compile Include="Utility\Base64Convertor.cs" />
     <Compile Include="Utility\MailAddressFormator.cs" />
-    <Compile Include="Utility\NonEnglishCharDetector.cs" />
+    <Compile Include="Utility\StringDetectors.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
