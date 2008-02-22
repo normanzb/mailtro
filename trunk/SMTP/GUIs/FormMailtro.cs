@@ -28,15 +28,11 @@ namespace SMTP
         private bool autoScrollLog;
         private Thread threadSendMail;
         private delegate void delWriteLogToItemlist(string _log);
-        private delegate void delSetProperty(string _key, object _value);
-        private delegate object delGetProperty(string _key);
         private bool m_issending;
         private bool m_stopsending;
         private bool m_customizemessagebody;
         private AuthenticationLogin m_authLogin;
         private EventWaitHandle signalSendMail;
-        private delSetProperty iDelSetProperty;
-        private delGetProperty iDelGetProperty;
         private Commands.CommandManager cmdMgr;
         private Utility.TextboxAcceptKeyHelper acceptKeyHelper;
         private SMTPCommunicator cmdSMTPCommunicator;
@@ -67,8 +63,6 @@ namespace SMTP
             cmdSMTPCommunicator = new SMTPCommunicator();
             m_authLogin = new AuthenticationLogin();
             signalSendMail = new EventWaitHandle(false, EventResetMode.ManualReset);
-            iDelSetProperty = new delSetProperty(this.setProperty);
-            iDelGetProperty = new delGetProperty(this.getProperty);
             cmdMgr = new SMTP.Commands.CommandManager();
             cmdMgr.UpdateMessage += new SMTP.Commands.CommandEvent.CommandEventHandler(OnCommandManagerUpdateMessage);
             cmdMgr.Attach(Commands.PackageCommands.Pack(this.cmdSMTPCommunicator));
@@ -192,12 +186,7 @@ namespace SMTP
 
         private void btnSend_Click(object sender, EventArgs e)
         {
-            //-------------
-            // TODO: Check user input
-            //-------------
-            //Use thread to send mail //SendMail();
-            
-            //setProperty("Progress", 100);
+
             if (IsSending == false)
             {
                 try
@@ -438,35 +427,13 @@ namespace SMTP
 
         }
 
-        //Help for set and get property from another threads.
-        private void setProperty(string _key, object _value)
-        {
-            PropertyInfo[] _tempProInfo = this.GetType().GetProperties();
-            int i;
-            for (i = 0; i < _tempProInfo.Length; i++)
-            {
-                if (_tempProInfo[i].Name == _key)
-                    _tempProInfo[i].SetValue(this, _value, null);
-            }
-        }
-        private object getProperty(string _key) {
-            PropertyInfo[] _tempProInfo = this.GetType().GetProperties();
-            int i;
-            for (i = 0; i < _tempProInfo.Length; i++)
-            {
-                if (_tempProInfo[i].Name == _key)
-                    break;
-            }
-            return _tempProInfo[i].GetValue(this, null);
-        }
-
         private void SendMail() {
             int i;
             int count;
             int sleep;
             
-            count = (int)stuMain.Invoke(iDelGetProperty, "Count");
-            sleep = (int)stuMain.Invoke(iDelGetProperty, "Interval");
+            count = (int)Utility.ThreadHelper.CrossThreadPropertyHelper.GetProperty(this, "Count");
+            sleep = (int)Utility.ThreadHelper.CrossThreadPropertyHelper.GetProperty(this, "Interval");
 
             //-------------
             // TODO: Change all read property method via delGetProperty
@@ -494,6 +461,13 @@ namespace SMTP
             sc.From = this.txtFrom.Text;
             sc.To = this.txtTo.Text;
 
+            string sMailEncodingName = SMTP.Utility.ThreadHelper.CrossThreadPropertyHelper.GetProperty(this.cmbEncodingName, "Text").ToString();
+            if (sMailEncodingName.ToLower() == "default")
+            {
+                sMailEncodingName = Encoding.Default.HeaderName;
+            }
+            sc.EncodingName = sMailEncodingName;
+
             //Check whether to send bcc and cc
             if (receiverPanExpand)
             {
@@ -506,7 +480,7 @@ namespace SMTP
             }
 
             sc.Subject = this.txtSubject.Text;
-            sc.CustomizeMessageBody = (bool)this.Invoke(iDelGetProperty, "CustomizeMessageBody");
+            sc.CustomizeMessageBody = (bool)Utility.ThreadHelper.CrossThreadPropertyHelper.GetProperty(this, "CustomizeMessageBody");
             if (sc.CustomizeMessageBody == true)
                 sc.Message = Encoding.Default.GetString(this.textByteProvider.Bytes.ToArray());
             else
@@ -524,21 +498,17 @@ namespace SMTP
                 }
             }
 
-            object[] _obj = new object[] { "Progress", null };
-            
-
             for (i = 0; i < count; i++)
             {
                 //If StopSending property is set to true, stop send mail.
-                if ((bool)stuMain.Invoke(iDelGetProperty, "StopSending"))
+                if ((bool)Utility.ThreadHelper.CrossThreadPropertyHelper.GetProperty(this, "StopSending"))
                     break;
                 try
                 {
 
                     sc.Open();
                     sc.Send();
-                    _obj[1] = (int)(i * 100 / count);
-                    stuMain.Invoke(iDelSetProperty, _obj);
+                    
 
                 }
                 catch (Exception ex)
@@ -549,6 +519,7 @@ namespace SMTP
                 }
                 finally
                 {
+                    Utility.ThreadHelper.CrossThreadPropertyHelper.SetProperty(this, "Progress", (int)(i * 100 / count));
                     sc.Close();
                 }
 
@@ -563,9 +534,9 @@ namespace SMTP
         }
 
         private void OnSendCompleted() {
-            stuMain.Invoke(iDelSetProperty, new object[] {"Progress",100 });
-            stuMain.Invoke(iDelSetProperty, new object[] { "IsSending", false });
-            stuMain.Invoke(iDelSetProperty, new object[] { "StopSending", false });
+            Utility.ThreadHelper.CrossThreadPropertyHelper.SetProperty(this, "Progress", 100 );
+            Utility.ThreadHelper.CrossThreadPropertyHelper.SetProperty(this, "IsSending", false );
+            Utility.ThreadHelper.CrossThreadPropertyHelper.SetProperty(this, "StopSending", false );
         }
 
         private void ExportWriter(string _input) {
@@ -590,6 +561,10 @@ namespace SMTP
             {
                 throw new Exception("SMTP server ip address not entered.");
                 
+            }
+            if (cmbEncodingName.Text.Trim() == string.Empty)
+            {
+                throw new Exception("Please select a encoding.");
             }
             return true;
         }

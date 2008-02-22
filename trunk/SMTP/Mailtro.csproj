@@ -89,7 +89,10 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Utility\CrossThreadPropertyHelper.cs" />
+    <Compile Include="Utility\SyncSignaler.cs" />
     <Compile Include="Utility\TextboxAcceptKeyHelper.cs" />
+    <Compile Include="Utility\ThreadHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Mail.ico" />
