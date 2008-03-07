@@ -26,13 +26,15 @@ namespace SMTP
 
         private bool receiverPanExpand;
         private bool autoScrollLog;
-        private Thread threadSendMail;
+        
+        // Thread for sending mails.
+        Utility.ThreadHelper.ThreadHelper threadSendMail;
+        //private Thread threadSendMail;
+
         private delegate void delWriteLogToItemlist(string _log);
         private bool m_issending;
-        private bool m_stopsending;
         private bool m_customizemessagebody;
         private AuthenticationLogin m_authLogin;
-        private EventWaitHandle signalSendMail;
         private Commands.CommandManager cmdMgr;
         private Utility.TextboxAcceptKeyHelper acceptKeyHelper;
         private SMTPCommunicator cmdSMTPCommunicator;
@@ -41,37 +43,35 @@ namespace SMTP
 
         private void SMTP_Load(object sender, EventArgs e)
         {
+            
             //Initializing...
             Initialize();
-
-            
-
-            
 
         }
 
         private void Initialize() {
-
+            // TODO: Move this line to design.cs
             fileMain.FileOk += new CancelEventHandler(fileMain_FileOk);
 
-
-
             ExpandRecPanel(false);
+
+            // TODO: Change to property
             ScrollLog(true);
             
-
+            // Initialize for command mode
             cmdSMTPCommunicator = new SMTPCommunicator();
             m_authLogin = new AuthenticationLogin();
-            signalSendMail = new EventWaitHandle(false, EventResetMode.ManualReset);
             cmdMgr = new SMTP.Commands.CommandManager();
             cmdMgr.UpdateMessage += new SMTP.Commands.CommandEvent.CommandEventHandler(OnCommandManagerUpdateMessage);
             cmdMgr.Attach(Commands.PackageCommands.Pack(this.cmdSMTPCommunicator));
             cmdMgr.Attach(new Commands.CmdHelp(cmdMgr));
 
+            // Set accept key word command textbox
             acceptKeyHelper = new SMTP.Utility.TextboxAcceptKeyHelper(this.txtCommand);
             acceptKeyHelper.AcceptButton = this.btnCommand;
 
-            this.messageBodyBytes = new byte[1];
+            // Initialize hex editor
+            this.messageBodyBytes = new byte[0];
             textByteProvider = new Be.Windows.Forms.DynamicByteProvider(this.messageBodyBytes);
 
             this.hexMessage.ByteProvider = textByteProvider;
@@ -121,17 +121,6 @@ namespace SMTP
             }
         }
 
-        public bool StopSending {
-            get
-            {
-                return m_stopsending;
-            }
-            set
-            {
-                m_stopsending = value;
-            }
-        }
-
         //A milliseconds interval between every talks to SMTP server.
         public int Interval {
 
@@ -171,7 +160,7 @@ namespace SMTP
 
         #endregion
 
-        #region Events
+        #region Process Events
 
         private void btnClearLog_Click(object sender, EventArgs e)
         {
@@ -189,6 +178,7 @@ namespace SMTP
 
             if (IsSending == false)
             {
+                // Validate user input
                 try
                 {
                     InputValidation();
@@ -197,16 +187,32 @@ namespace SMTP
                     MessageBox.Show(ex.Message);
                     return;
                 }
+
                 IsSending = !IsSending;
-                threadSendMail = new Thread(new ThreadStart(SendMail));
-                threadSendMail.Start();
+
+                Utility.ThreadHelper.ThreadHelper.DelProcess ProcessDelegate
+                    = new SMTP.Utility.ThreadHelper.ThreadHelper.DelProcess(this.SendMailProcess);
+                Utility.ThreadHelper.ThreadHelper.StandardParameters sParams =
+                    new SMTP.Utility.ThreadHelper.ThreadHelper.StandardParameters();
+                threadSendMail = new SMTP.Utility.ThreadHelper.ThreadHelper(ProcessDelegate);
+                threadSendMail.Run(sParams);
+
+                //threadSendMail = new Thread(new ThreadStart(SendMail));
+                //threadSendMail.Start();
             }
             else {
-                this.StopSending = true;
-                signalSendMail.WaitOne(3000,false);
-                threadSendMail.Join(1000);
-                threadSendMail.Abort();
-                OnSendCompleted();
+                this.CancelSending();
+            }
+
+        }
+
+        private void threadSendMail_BeforeAbort(object sender, EventArgs e)
+        {
+            // Close connection before abort.
+            if (sc.State != SMTPCommunicator.ConnectionState.Closed &&
+                sc.State != SMTPCommunicator.ConnectionState.NotStart)
+            {
+                sc.Close();
             }
 
         }
@@ -216,7 +222,7 @@ namespace SMTP
             this.Close();
         }
 
-        void fileMain_FileOk(object sender, CancelEventArgs e)
+        private void fileMain_FileOk(object sender, CancelEventArgs e)
         {
             txtAttachment.Items.Add((ItemCollection.FileCollection)fileMain.FileName);
         }
@@ -324,9 +330,7 @@ namespace SMTP
         {
             if (IsSending)
             {
-                this.StopSending = true;
-                threadSendMail.Join(5000);
-                threadSendMail.Abort();
+                this.CancelSending();
             }
         }
 
@@ -427,7 +431,8 @@ namespace SMTP
 
         }
 
-        private void SendMail() {
+        private void SendMailProcess(Utility.ThreadHelper.ThreadHelper.StandardParameters sParams)
+        {
             int i;
             int count;
             int sleep;
@@ -501,25 +506,28 @@ namespace SMTP
             for (i = 0; i < count; i++)
             {
                 //If StopSending property is set to true, stop send mail.
-                if ((bool)Utility.ThreadHelper.CrossThreadPropertyHelper.GetProperty(this, "StopSending"))
+                if (threadSendMail.CancelSignal.Get())
+                {
                     break;
+                }
+
                 try
                 {
-
                     sc.Open();
                     sc.Send();
-                    
-
                 }
                 catch (Exception ex)
                 {
-
-                    MessageBox.Show(ex.Message);
-
+                    // if the canceling signal is not set,
+                    // then it must be a unexpected exception.
+                    if (!threadSendMail.CancelSignal.Get())
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
                 }
                 finally
                 {
-                    Utility.ThreadHelper.CrossThreadPropertyHelper.SetProperty(this, "Progress", (int)(i * 100 / count));
+                    //Utility.ThreadHelper.CrossThreadPropertyHelper.SetProperty(this, "Progress", (int)(i * 100 / count));
                     sc.Close();
                 }
 
@@ -529,14 +537,22 @@ namespace SMTP
                     Thread.CurrentThread.Join(sleep);
                 }
             }
-            signalSendMail.Set();
+            OnSendCompleted();
+        }
+
+        private void CancelSending()
+        {
+
+            threadSendMail.BeforeAbort += new EventHandler(threadSendMail_BeforeAbort);
+
+            // Send cancel sigal.
+            threadSendMail.Cancel();
             OnSendCompleted();
         }
 
         private void OnSendCompleted() {
-            Utility.ThreadHelper.CrossThreadPropertyHelper.SetProperty(this, "Progress", 100 );
-            Utility.ThreadHelper.CrossThreadPropertyHelper.SetProperty(this, "IsSending", false );
-            Utility.ThreadHelper.CrossThreadPropertyHelper.SetProperty(this, "StopSending", false );
+            Utility.ThreadHelper.CrossThreadPropertyHelper.BeginSetProperty(this, "Progress", 100 );
+            Utility.ThreadHelper.CrossThreadPropertyHelper.BeginSetProperty(this, "IsSending", false);
         }
 
         private void ExportWriter(string _input) {
