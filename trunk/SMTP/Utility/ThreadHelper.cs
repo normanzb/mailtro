@@ -17,13 +17,16 @@ namespace SMTP.Utility.ThreadHelper
 {
     public class ThreadHelper
     {
+        // The default timeout
         const long DEFUALTTIMEOUT = 600000;
 
+        // Initialize the worker thread
         public delegate void DelProcess(StandardParameters sparam);
         public DelProcess Process;
         private Thread threadProcess;
         private ParameterizedThreadStart threadProcStarter;
 
+        // Initialize the monitor thread
         private Thread threadMonitor;
         private ParameterizedThreadStart threadMoniStarter;
 
@@ -87,11 +90,11 @@ namespace SMTP.Utility.ThreadHelper
                 }
             }
 
-            private SMTP.Utility.ThreadHelper.SyncSignaler _cancelSignal;
+            private SyncSignaler _cancelSignal;
             /// <summary>
             /// Get or set the Cancel Signal.
             /// </summary>
-            public SMTP.Utility.ThreadHelper.SyncSignaler CancelSignal
+            public SyncSignaler CancelSignal
             {
                 set {
                     this._cancelSignal = value;
@@ -111,11 +114,19 @@ namespace SMTP.Utility.ThreadHelper
             Initialize();
         }
 
-        private SMTP.Utility.ThreadHelper.SyncSignaler _cancelSignal;
+        #region Events
+
+        public event EventHandler BeforeAbort;
+
+        #endregion
+
+        #region Publics
+
+        private SyncSignaler _cancelSignal;
         /// <summary>
         /// Get or set the Cancel Signal.
         /// </summary>
-        public SMTP.Utility.ThreadHelper.SyncSignaler CancelSignal
+        public SyncSignaler CancelSignal
         {
             set {
                 this._cancelSignal = value;
@@ -144,22 +155,8 @@ namespace SMTP.Utility.ThreadHelper
             }
         }
 
-        private void Initialize(){
-
-            this.State = ThreadHelperState.NotStart;
-            threadProcStarter = new ParameterizedThreadStart(this.Runner);
-            threadProcess = new Thread(threadProcStarter);
-            threadMoniStarter = new ParameterizedThreadStart(this.MonitorProcess);
-            threadMonitor = new Thread(threadMoniStarter);
-
-        }
-
-        private void Runner(object param) {
-            this.Process.Invoke((StandardParameters)param);
-        }
-
         /// <summary>
-        /// Start the thread.
+        /// Start the thread with a standard parameters object which help passing your params.
         /// </summary>
         /// <param name="sparam">Standard sparam</param>
         public void Run(StandardParameters sparam)
@@ -173,6 +170,15 @@ namespace SMTP.Utility.ThreadHelper
                 this.State = ThreadHelperState.Processing;
             }
 
+        }
+
+        /// <summary>
+        /// Start the thread.
+        /// </summary>
+        public void Run()
+        {
+            StandardParameters sParams = new StandardParameters();
+            this.Run(sParams);
         }
 
         /// <summary>
@@ -206,12 +212,47 @@ namespace SMTP.Utility.ThreadHelper
         /// <summary>
         /// Cancel the thread.
         /// </summary>
-        public void Cancel() {
+        public void Cancel(int millisecond) {
             if (this.CancelSignal != null)
                 this.CancelSignal.Set();
-            threadProcess.Join(3000);
+            threadProcess.Join(millisecond);
+
+            // Fire beforeAbort event before abort.
+            if (BeforeAbort != null)
+            {
+                BeforeAbort.Invoke(this, new EventArgs());
+            }
+
             threadProcess.Abort();
             this.State = ThreadHelperState.Cancel;
+        }
+
+        /// <summary>
+        /// Cancel the thread.
+        /// </summary>
+        public void Cancel()
+        {
+            this.Cancel((int)DEFUALTTIMEOUT);
+        }
+
+        #endregion
+
+        #region Privates
+
+        private void Initialize()
+        {
+
+            this.State = ThreadHelperState.NotStart;
+            threadProcStarter = new ParameterizedThreadStart(this.Runner);
+            threadProcess = new Thread(threadProcStarter);
+            threadMoniStarter = new ParameterizedThreadStart(this.MonitorProcess);
+            threadMonitor = new Thread(threadMoniStarter);
+
+        }
+
+        private void Runner(object param)
+        {
+            this.Process.Invoke((StandardParameters)param);
         }
 
         private void MonitorProcess(object sparam) {
@@ -219,5 +260,7 @@ namespace SMTP.Utility.ThreadHelper
             this.Wait(-1);
             this.State = ThreadHelperState.Completed;
         }
+
+        #endregion
     }
 }

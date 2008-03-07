@@ -52,5 +52,10 @@ namespace SMTP.Utility.ThreadHelper
         {
             context.Invoke(DelegateSetProperty, new Object[] { context, key, value });
         }
+
+        public static void BeginSetProperty(ISynchronizeInvoke context, string key, object value)
+        {
+            context.BeginInvoke(DelegateSetProperty, new Object[] { context, key, value });
+        }
     }
 }

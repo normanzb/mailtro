@@ -76,6 +76,15 @@ namespace SMTP
                 return new Attachment(_path);
             }
         }
+
+        public enum ConnectionState
+        {
+            NotStart,
+            Opened,
+            Sending,
+            Closed,
+        }
+
         #endregion
 
         #region Private variables
@@ -328,6 +337,21 @@ namespace SMTP
             }
         }
 
+        private ConnectionState _connectionState;
+        /// <summary>
+        /// Get the connection state
+        /// </summary>
+        public ConnectionState State
+        {
+            get {
+                return this._connectionState;
+            }
+            private set
+            {
+                this._connectionState = value;
+            }
+        }
+
         #endregion
 
         /// //////////////////////////////////////////////////////////////////////////////////////////
@@ -339,6 +363,9 @@ namespace SMTP
             Attachments = new Collection<Attachment>();
             this.MessageEncoding = MessageEncoding.Printable;
             this.EncodingName = Encoding.Default.EncodingName;
+
+            // Initialize currentl state
+            this.State = ConnectionState.NotStart;
         }
 
         /// //////////////////////////////////////////////////////////////////////////////////////////
@@ -347,10 +374,12 @@ namespace SMTP
         /// </summary>
         public void Send() 
         {
+
+            this.State = ConnectionState.Sending;
+
             //-------------
             // TODO: Validate the From, To and Message already assigned value.
             //-------------
-
 
             //Write log
             this.WriteLog(this.ToString() + "Begin to send message..." + this.IPAddress + "", MessageEventType.Warning);
@@ -778,6 +807,8 @@ namespace SMTP
             //Write log
             this.WriteLog(this.ToString() + "Connection established with " + this.IPAddress + "", MessageEventType.Warning);
 
+            this.State = ConnectionState.Opened;
+
         }
 
         //Open/Close connection to SMTP server
@@ -802,6 +833,8 @@ namespace SMTP
 
             //Write log
             this.WriteLog(this.ToString() + "Connection closed from " + this.IPAddress + "", MessageEventType.Warning);
+
+            this.State = ConnectionState.Closed;
         }
 
         // Dealing with Message Body
