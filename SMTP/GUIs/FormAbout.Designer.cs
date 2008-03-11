@@ -95,9 +95,11 @@ namespace SMTP.GUIs
             this.Controls.Add(this.lblName);
             this.Controls.Add(this.lblVersionNum);
             this.Controls.Add(this.lblVersion);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "FormAbout";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "FormAbout";
+            this.Text = "About";
             this.Load += new System.EventHandler(this.FormAbout_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
