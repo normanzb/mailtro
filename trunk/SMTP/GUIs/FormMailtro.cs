@@ -190,8 +190,8 @@ namespace SMTP
 
                 IsSending = !IsSending;
 
-                Utility.ThreadHelper.ThreadHelper.DelProcess ProcessDelegate
-                    = new SMTP.Utility.ThreadHelper.ThreadHelper.DelProcess(this.SendMailProcess);
+                Utility.ThreadHelper.ThreadHelper.DelProcess ProcessDelegate = 
+                    new SMTP.Utility.ThreadHelper.ThreadHelper.DelProcess(this.SendMailProcess);
                 Utility.ThreadHelper.ThreadHelper.StandardParameters sParams =
                     new SMTP.Utility.ThreadHelper.ThreadHelper.StandardParameters();
                 threadSendMail = new SMTP.Utility.ThreadHelper.ThreadHelper(ProcessDelegate);
@@ -336,7 +336,8 @@ namespace SMTP
 
         private void aboutToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Mailtro for SMTP tester\r\n by Norman Xu \r\n http://eroman.org \r\n http://mailtro.googlecode.com");
+            GUIs.FormAbout fAbout = new SMTP.GUIs.FormAbout();
+            fAbout.ShowDialog();
         }
 
         private void onlineSupportToolStripMenuItem_Click(object sender, EventArgs e)
@@ -522,7 +523,8 @@ namespace SMTP
                     // then it must be a unexpected exception.
                     if (!threadSendMail.CancelSignal.Get())
                     {
-                        MessageBox.Show(ex.Message);
+                        // TODO: add ability to log list to view all text in it.
+                        this.WriteLogToitemlist(ex.Message);
                     }
                 }
                 finally
@@ -548,6 +550,8 @@ namespace SMTP
             // Send cancel sigal.
             threadSendMail.Cancel();
             OnSendCompleted();
+
+            this.WriteLogToitemlist("Job has been canceled.");
         }
 
         private void OnSendCompleted() {
