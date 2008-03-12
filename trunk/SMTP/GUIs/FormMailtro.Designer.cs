@@ -258,25 +258,25 @@ namespace SMTP
             // 
             this.importToolStripMenuItem.Image = global::SMTP.Properties.Resources.Public_ico;
             this.importToolStripMenuItem.Name = "importToolStripMenuItem";
-            this.importToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.importToolStripMenuItem.Size = new System.Drawing.Size(120, 22);
             this.importToolStripMenuItem.Text = "Import(&I)";
             // 
             // exportToolStripMenuItem
             // 
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(120, 22);
             this.exportToolStripMenuItem.Text = "Export(&E)";
             this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(149, 6);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(117, 6);
             // 
             // exitEToolStripMenuItem
             // 
             this.exitEToolStripMenuItem.Name = "exitEToolStripMenuItem";
-            this.exitEToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitEToolStripMenuItem.Size = new System.Drawing.Size(120, 22);
             this.exitEToolStripMenuItem.Text = "Exit(&X)";
             this.exitEToolStripMenuItem.Click += new System.EventHandler(this.exitEToolStripMenuItem_Click);
             // 
@@ -524,6 +524,7 @@ namespace SMTP
             this.txtMessage.Location = new System.Drawing.Point(16, 118);
             this.txtMessage.Multiline = true;
             this.txtMessage.Name = "txtMessage";
+            this.txtMessage.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtMessage.Size = new System.Drawing.Size(386, 156);
             this.txtMessage.TabIndex = 113;
             // 
