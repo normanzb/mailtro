@@ -70,6 +70,7 @@ namespace SMTP
             this.label9 = new System.Windows.Forms.Label();
             this.btnToPlus = new System.Windows.Forms.Button();
             this.panMessageBody = new System.Windows.Forms.Panel();
+            this.cmbEncodingName = new System.Windows.Forms.ComboBox();
             this.txtMessage = new System.Windows.Forms.TextBox();
             this.chkMultiPart = new System.Windows.Forms.CheckBox();
             this.chkBase64 = new System.Windows.Forms.CheckBox();
@@ -88,7 +89,6 @@ namespace SMTP
             this.txtCommand = new System.Windows.Forms.TextBox();
             this.btnCommand = new System.Windows.Forms.Button();
             this.label13 = new System.Windows.Forms.Label();
-            this.cmbEncodingName = new System.Windows.Forms.ComboBox();
             this.menMain.SuspendLayout();
             this.stuMain.SuspendLayout();
             this.panReceiver.SuspendLayout();
@@ -258,25 +258,25 @@ namespace SMTP
             // 
             this.importToolStripMenuItem.Image = global::SMTP.Properties.Resources.Public_ico;
             this.importToolStripMenuItem.Name = "importToolStripMenuItem";
-            this.importToolStripMenuItem.Size = new System.Drawing.Size(120, 22);
+            this.importToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.importToolStripMenuItem.Text = "Import(&I)";
             // 
             // exportToolStripMenuItem
             // 
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(120, 22);
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exportToolStripMenuItem.Text = "Export(&E)";
             this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(117, 6);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(149, 6);
             // 
             // exitEToolStripMenuItem
             // 
             this.exitEToolStripMenuItem.Name = "exitEToolStripMenuItem";
-            this.exitEToolStripMenuItem.Size = new System.Drawing.Size(120, 22);
+            this.exitEToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exitEToolStripMenuItem.Text = "Exit(&X)";
             this.exitEToolStripMenuItem.Click += new System.EventHandler(this.exitEToolStripMenuItem_Click);
             // 
@@ -502,8 +502,24 @@ namespace SMTP
             this.panMessageBody.Size = new System.Drawing.Size(416, 309);
             this.panMessageBody.TabIndex = 5;
             // 
+            // cmbEncodingName
+            // 
+            this.cmbEncodingName.FormattingEnabled = true;
+            this.cmbEncodingName.Items.AddRange(new object[] {
+            "Default",
+            "ASCII",
+            "Gb2312",
+            "Shift-JIS"});
+            this.cmbEncodingName.Location = new System.Drawing.Point(351, 68);
+            this.cmbEncodingName.Name = "cmbEncodingName";
+            this.cmbEncodingName.Size = new System.Drawing.Size(51, 21);
+            this.cmbEncodingName.TabIndex = 114;
+            this.cmbEncodingName.Text = "Default";
+            // 
             // txtMessage
             // 
+            this.txtMessage.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)));
             this.txtMessage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtMessage.Location = new System.Drawing.Point(16, 118);
             this.txtMessage.Multiline = true;
@@ -679,20 +695,6 @@ namespace SMTP
             this.label13.TabIndex = 112;
             this.label13.Text = "Command:";
             // 
-            // cmbEncodingName
-            // 
-            this.cmbEncodingName.FormattingEnabled = true;
-            this.cmbEncodingName.Items.AddRange(new object[] {
-            "Default",
-            "ASCII",
-            "Gb2312",
-            "Shift-JIS"});
-            this.cmbEncodingName.Location = new System.Drawing.Point(351, 68);
-            this.cmbEncodingName.Name = "cmbEncodingName";
-            this.cmbEncodingName.Size = new System.Drawing.Size(51, 21);
-            this.cmbEncodingName.TabIndex = 114;
-            this.cmbEncodingName.Text = "Default";
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -725,8 +727,8 @@ namespace SMTP
             this.Name = "MainForm";
             this.Padding = new System.Windows.Forms.Padding(3);
             this.Text = "Mailtro";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.SMTP_Load);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.menMain.ResumeLayout(false);
             this.menMain.PerformLayout();
             this.stuMain.ResumeLayout(false);

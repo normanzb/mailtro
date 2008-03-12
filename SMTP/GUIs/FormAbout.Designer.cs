@@ -78,7 +78,7 @@ namespace SMTP.GUIs
             // 
             this.lblLink.AutoSize = true;
             this.lblLink.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-            this.lblLink.Location = new System.Drawing.Point(18, 114);
+            this.lblLink.Location = new System.Drawing.Point(18, 70);
             this.lblLink.Name = "lblLink";
             this.lblLink.Size = new System.Drawing.Size(104, 12);
             this.lblLink.TabIndex = 5;
@@ -89,12 +89,13 @@ namespace SMTP.GUIs
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(231, 135);
+            this.ClientSize = new System.Drawing.Size(191, 91);
             this.Controls.Add(this.lblLink);
             this.Controls.Add(this.lblSubTitle);
             this.Controls.Add(this.lblName);
             this.Controls.Add(this.lblVersionNum);
             this.Controls.Add(this.lblVersion);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FormAbout";
