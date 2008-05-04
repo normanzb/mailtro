@@ -312,6 +312,15 @@ namespace SMTP
                     iSMTPC.Attachments.Add((SMTPCommunicator.Attachment)this.txtAttachment.Items[i].Path);
                 }
             }
+
+            // Encoding
+            string sMailEncodingName = this.cmbEncodingName.Text;
+            if (sMailEncodingName.ToLower() == "default")
+            {
+                sMailEncodingName = Encoding.Default.HeaderName;
+            }
+            iSMTPC.EncodingName = sMailEncodingName;
+
             iSMTPC.MessageBodySerialization(new SMTPCommunicator.delWriteData(this.ExportWriter));
         }
 
