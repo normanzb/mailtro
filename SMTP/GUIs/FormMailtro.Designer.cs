@@ -257,7 +257,6 @@ namespace SMTP
             // 
             // importToolStripMenuItem
             // 
-            this.importToolStripMenuItem.Image = global::SMTP.Properties.Resources.Public_ico;
             this.importToolStripMenuItem.Name = "importToolStripMenuItem";
             this.importToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.importToolStripMenuItem.Text = "Import(&I)";
@@ -697,10 +696,6 @@ namespace SMTP
             this.label13.Size = new System.Drawing.Size(57, 13);
             this.label13.TabIndex = 112;
             this.label13.Text = "Command:";
-            // 
-            // ofdImport
-            // 
-            this.ofdImport.FileName = "openFileDialog1";
             // 
             // MainForm
             // 
