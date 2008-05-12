@@ -52,6 +52,10 @@ namespace SMTP
         private void Initialize() {
             // TODO: Move this line to design.cs
             fileMain.FileOk += new CancelEventHandler(fileMain_FileOk);
+            sfdExport.FileOk += new CancelEventHandler(sfdExport_FileOk);
+            sfdExport.Filter = "EML|*.eml";
+            ofdImport.FileOk += new CancelEventHandler(ofdImport_FileOk);
+            ofdImport.Filter = "EML|*.eml";
 
             ExpandRecPanel(false);
 
@@ -263,12 +267,6 @@ namespace SMTP
             //-------------
             // TODO: Check out the core fields is entried.
             //-------------
-            if (this.CustomizeMessageBody==true){
-                MessageBox.Show("Could not support export data under datagram view mode");
-                return;
-            }
-
-            sfdExport.FileOk += new CancelEventHandler(sfdExport_FileOk);
             sfdExport.ShowDialog();
 
         }
@@ -276,52 +274,91 @@ namespace SMTP
         void sfdExport_FileOk(object sender, CancelEventArgs e)
         {
             FileStream fs = new FileStream(sfdExport.FileName, FileMode.Create);
-            fs.Close();
 
-            //-------------
-            // TODO: A new function to bind data from current form to SMTPCommunicator object
-            //-------------
-            SMTPCommunicator iSMTPC = new SMTPCommunicator();
-            iSMTPC.To = this.txtTo.Text;
-            iSMTPC.From = this.txtTo.Text;
-            //Check whether to send bcc and cc
-            if (receiverPanExpand)
+            if (this.CustomizeMessageBody == true)
             {
-                if (this.txtCc.Text.Trim() != "")
-                    iSMTPC.Cc = this.txtCc.Text.Trim();
-
-                if (this.lblBcc.Text.Trim() != "")
-                    iSMTPC.Bcc = this.txtBcc.Text.Trim();
+                byte[] emlBodyBytes = new byte[hexMessage.ByteProvider.Length];
+                for (int i = 0; i < hexMessage.ByteProvider.Length; i++)
+                {
+                    emlBodyBytes[i] = hexMessage.ByteProvider.ReadByte(i);
+                }
+                fs.Write(emlBodyBytes,0,emlBodyBytes.Length);
+                fs.Close();
 
             }
-            iSMTPC.Subject = this.txtSubject.Text;
-
-            if (this.CustomizeMessageBody)
-                iSMTPC.Message = Encoding.Default.GetString(this.textByteProvider.Bytes.ToArray());
             else
+            {
+                fs.Close();
+
+                //-------------
+                // TODO: A new function to bind data from current form to SMTPCommunicator object
+                //-------------
+                SMTPCommunicator iSMTPC = new SMTPCommunicator();
+                iSMTPC.To = this.txtTo.Text;
+                iSMTPC.From = this.txtTo.Text;
+                //Check whether to send bcc and cc
+                if (receiverPanExpand)
+                {
+                    if (this.txtCc.Text.Trim() != "")
+                        iSMTPC.Cc = this.txtCc.Text.Trim();
+
+                    if (this.lblBcc.Text.Trim() != "")
+                        iSMTPC.Bcc = this.txtBcc.Text.Trim();
+
+                }
+                iSMTPC.Subject = this.txtSubject.Text;
+
                 iSMTPC.Message = this.txtMessage.Text;
 
-            int i;
-            if (txtAttachment.Items.Count > 0)
-            {
-
-                //Clear attachment first
-                iSMTPC.Attachments.Clear();
-                for (i = 0; i < this.txtAttachment.Items.Count; i++)
+                int i;
+                if (txtAttachment.Items.Count > 0)
                 {
-                    iSMTPC.Attachments.Add((SMTPCommunicator.Attachment)this.txtAttachment.Items[i].Path);
+
+                    //Clear attachment first
+                    iSMTPC.Attachments.Clear();
+                    for (i = 0; i < this.txtAttachment.Items.Count; i++)
+                    {
+                        iSMTPC.Attachments.Add((SMTPCommunicator.Attachment)this.txtAttachment.Items[i].Path);
+                    }
                 }
-            }
 
-            // Encoding
-            string sMailEncodingName = this.cmbEncodingName.Text;
-            if (sMailEncodingName.ToLower() == "default")
-            {
-                sMailEncodingName = Encoding.Default.HeaderName;
-            }
-            iSMTPC.EncodingName = sMailEncodingName;
+                // Encoding
+                string sMailEncodingName = this.cmbEncodingName.Text;
+                if (sMailEncodingName.ToLower() == "default")
+                {
+                    sMailEncodingName = Encoding.Default.HeaderName;
+                }
+                iSMTPC.EncodingName = sMailEncodingName;
 
-            iSMTPC.MessageBodySerialization(new SMTPCommunicator.delWriteData(this.ExportWriter));
+                iSMTPC.MessageBodySerialization(new SMTPCommunicator.delWriteData(this.ExportWriter));
+            }
+        }
+
+        private void importToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
+            ofdImport.ShowDialog();
+            
+        }
+
+        void ofdImport_FileOk(object sender, CancelEventArgs e)
+        {
+            FileStream fs = new FileStream(ofdImport.FileName, FileMode.Open);
+
+            byte[] emlMsgBytes = new byte[fs.Length];
+
+            fs.Read(emlMsgBytes, 0, emlMsgBytes.Length);
+
+            fs.Close();
+
+            // Clear hex editor
+            hexMessage.ByteProvider.DeleteBytes(0, hexMessage.ByteProvider.Length);
+
+            this.textByteProvider = new Be.Windows.Forms.DynamicByteProvider(emlMsgBytes);
+
+            hexMessage.ByteProvider = this.textByteProvider;
+
+            this.CustomizeMessageBody = true;
         }
 
         private void btnSetAuth_Click(object sender, EventArgs e)
@@ -597,6 +634,8 @@ namespace SMTP
             }
             return true;
         }
+
+
 
 
 
