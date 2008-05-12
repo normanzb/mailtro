@@ -89,6 +89,7 @@ namespace SMTP
             this.txtCommand = new System.Windows.Forms.TextBox();
             this.btnCommand = new System.Windows.Forms.Button();
             this.label13 = new System.Windows.Forms.Label();
+            this.ofdImport = new System.Windows.Forms.OpenFileDialog();
             this.menMain.SuspendLayout();
             this.stuMain.SuspendLayout();
             this.panReceiver.SuspendLayout();
@@ -258,25 +259,26 @@ namespace SMTP
             // 
             this.importToolStripMenuItem.Image = global::SMTP.Properties.Resources.Public_ico;
             this.importToolStripMenuItem.Name = "importToolStripMenuItem";
-            this.importToolStripMenuItem.Size = new System.Drawing.Size(120, 22);
+            this.importToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.importToolStripMenuItem.Text = "Import(&I)";
+            this.importToolStripMenuItem.Click += new System.EventHandler(this.importToolStripMenuItem_Click);
             // 
             // exportToolStripMenuItem
             // 
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(120, 22);
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exportToolStripMenuItem.Text = "Export(&E)";
             this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(117, 6);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(149, 6);
             // 
             // exitEToolStripMenuItem
             // 
             this.exitEToolStripMenuItem.Name = "exitEToolStripMenuItem";
-            this.exitEToolStripMenuItem.Size = new System.Drawing.Size(120, 22);
+            this.exitEToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exitEToolStripMenuItem.Text = "Exit(&X)";
             this.exitEToolStripMenuItem.Click += new System.EventHandler(this.exitEToolStripMenuItem_Click);
             // 
@@ -696,6 +698,10 @@ namespace SMTP
             this.label13.TabIndex = 112;
             this.label13.Text = "Command:";
             // 
+            // ofdImport
+            // 
+            this.ofdImport.FileName = "openFileDialog1";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -807,6 +813,7 @@ namespace SMTP
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.TextBox txtMessage;
         private System.Windows.Forms.ComboBox cmbEncodingName;
+        private System.Windows.Forms.OpenFileDialog ofdImport;
 
 
     }
