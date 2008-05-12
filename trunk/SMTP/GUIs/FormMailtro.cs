@@ -53,9 +53,9 @@ namespace SMTP
             // TODO: Move this line to design.cs
             fileMain.FileOk += new CancelEventHandler(fileMain_FileOk);
             sfdExport.FileOk += new CancelEventHandler(sfdExport_FileOk);
-            sfdExport.Filter = "EML|*.eml";
+            sfdExport.Filter = "Eml (*.eml)|*.eml|All File (*.*)|*.*";
             ofdImport.FileOk += new CancelEventHandler(ofdImport_FileOk);
-            ofdImport.Filter = "EML|*.eml";
+            ofdImport.Filter = "Eml (*.eml)|*.eml|All File (*.*)|*.*";
 
             ExpandRecPanel(false);
 
